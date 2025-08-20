@@ -1,0 +1,23 @@
+[package]
+name = "commandeer-cli"
+version.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+description = "CLI for commandeer-test"
+
+[[bin]]
+name = "commandeer"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true, features = [
+    "fs",
+    "io-util",
+    "macros",
+    "process",
+    "rt-multi-thread",
+] }
+commandeer-test = { path = "../commandeer-test" }

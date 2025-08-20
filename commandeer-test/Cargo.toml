@@ -1,0 +1,25 @@
+[package]
+name = "commandeer-test"
+version.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+description = "Takes over your commands for testing with record and replay support."
+
+[dependencies]
+tokio = { workspace = true, features = [
+    "fs",
+    "io-util",
+    "macros",
+    "process",
+    "rt-multi-thread",
+] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+escargot = { workspace = true }
+tempfile = { workspace = true }
+commandeer-macros = { path = "../commandeer-macros" }
+
+[dev-dependencies]
+sealed_test.workspace = true

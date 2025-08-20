@@ -1,0 +1,15 @@
+{
+  "commands": {
+    "echo:hello": [
+      {
+        "binary_name": "echo",
+        "args": [
+          "hello"
+        ],
+        "stdout": "hello\n",
+        "stderr": "",
+        "exit_code": 0
+      }
+    ]
+  }
+}

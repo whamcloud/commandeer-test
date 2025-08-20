@@ -1,0 +1,13 @@
+{
+  "commands": {
+    "date:": [
+      {
+        "binary_name": "date",
+        "args": [],
+        "stdout": "Wed Aug 20 12:46:19 EDT 2025\n",
+        "stderr": "",
+        "exit_code": 0
+      }
+    ]
+  }
+}
