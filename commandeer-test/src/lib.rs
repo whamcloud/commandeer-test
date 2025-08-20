@@ -50,6 +50,13 @@ impl RecordedCommands {
 
 pub async fn load_recordings(file_path: &PathBuf) -> Result<RecordedCommands> {
     if !file_path.exists() {
+        tokio::fs::create_dir_all(
+            file_path.parent().unwrap_or_else(|| {
+                panic!("Couldn't get parent of recording {}", file_path.display())
+            }),
+        )
+        .await?;
+
         return Ok(RecordedCommands::default());
     }
 
@@ -139,7 +146,9 @@ impl fmt::Display for Mode {
 
 impl Commandeer {
     pub fn new(test_name: impl AsRef<Path>, mode: Mode) -> Self {
-        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let dir = PathBuf::from(
+            std::env::var("CARGO_MANIFEST_DIR").expect("Failed to get crate directory."),
+        );
 
         DirBuilder::new()
             .recursive(true)
@@ -149,7 +158,7 @@ impl Commandeer {
         let fixture = dir.join("testcmds").join(test_name);
 
         let mock_runner = CargoBuild::new()
-            .manifest_path(dir.join("Cargo.toml"))
+            .manifest_path(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"))
             .package("commandeer-cli")
             .bin("commandeer")
             .run()
