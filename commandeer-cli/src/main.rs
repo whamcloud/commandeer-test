@@ -18,7 +18,7 @@ enum Commands {
         file: PathBuf,
         #[arg(long)]
         command: String,
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     Replay {
@@ -26,14 +26,16 @@ enum Commands {
         file: PathBuf,
         #[arg(long)]
         command: String,
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
 }
 
 async fn record_mode(file_path: PathBuf, command: String, args: Vec<String>) -> Result<()> {
     let invocation = record_command(file_path, command, args).await?;
+
     output_invocation(&invocation);
+
     exit_with_code(invocation.exit_code);
 }
 
@@ -46,8 +48,7 @@ async fn replay_mode(file_path: PathBuf, command: String, args: Vec<String>) -> 
         }
         None => {
             eprintln!(
-                "No recorded invocation found for: {} {}",
-                command,
+                "No recorded invocation found for: {command} {}",
                 args.join(" ")
             );
 

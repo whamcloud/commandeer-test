@@ -17,11 +17,12 @@ keywords = [
 ]
 
 [workspace.dependencies]
-tokio = "1"
+anyhow = "1"
+clap = { version = "4.5", features = ["derive"] }
+escargot = "0.5"
+log = "0.4"
+serial_test = "3"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-clap = { version = "4.5", features = ["derive"] }
-anyhow = "1"
-escargot = "0.5"
 tempfile = "3"
-sealed_test = "1"
+tokio = "1"

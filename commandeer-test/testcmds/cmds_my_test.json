@@ -3,9 +3,7 @@
     "echo:hello": [
       {
         "binary_name": "echo",
-        "args": [
-          "hello"
-        ],
+        "args": ["hello"],
         "stdout": "hello\n",
         "stderr": "",
         "exit_code": 0

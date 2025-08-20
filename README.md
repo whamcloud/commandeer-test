@@ -1,6 +1,6 @@
 # Commandeer Test
 
-A CLI test binary substitute with record and replay functionality for Rust testing environments.
+A CLI test binary substitute with record and replay.
 
 ## Overview
 
@@ -37,20 +37,20 @@ The `commandeer-cli` binary provides standalone record and replay functionality:
 
 ```console
 # Record a simple command
-commandeer -- record --command echo hello world
+commandeer record --command echo hello world
 
 # Record with custom storage file
-commandeer -- record --file my-recordings.json --command ls -la
+commandeer record --file my-recordings.json --command ls -la
 ```
 
 #### Replaying Commands
 
 ```bash
 # Replay a recorded command
-commandeer -- replay --command echo hello world
+commandeer replay --command echo hello world
 
 # Replay from custom storage file
-commandeer -- replay --file my-recordings.json --command ls -la
+commandeer replay --file my-recordings.json --command ls -la
 ```
 
 ### Library Usage
@@ -59,8 +59,10 @@ commandeer -- replay --file my-recordings.json --command ls -la
 
 ```rust
 use commandeer_test::{Commandeer, Mode};
+use serial_test::serial;
 
 #[test]
+#[serial]
 fn test_with_mocked_commands() {
     let commandeer = Commandeer::new("my-test.json", Mode::Record);
 
@@ -83,9 +85,11 @@ The `#[commandeer]` macro provides automatic test setup:
 
 ```rust
 use commandeer_test::commandeer;
+use serial_test::serial;
 
 #[test]
 #[commandeer(Record, "git", "npm", "curl")]
+#[serial]
 fn with_macro_test() {
     // Macro roughly_expands_to:
     // let commandeer = Commandeer::new("test_with_macro_test.json", Mode::Record);
@@ -101,13 +105,15 @@ fn with_macro_test() {
     assert!(output.status.success());
 }
 
-#[test]
-#[commandeer(Replay, "git", "npm")]
-fn test_replay_with_macro() {
+#[tokio::test]
+#[commandeer(Replay, "git")]
+#[serial]
+async fn test_replay_with_macro() {
     // Uses replay mode with the same automatic setup
-    let output = std::process::Command::new("git")
-        .args(&["--version"])
+    let output = tokio::process::Command::new("git")
+        .arg("--version")
         .output()
+        .await
         .unwrap();
 
     assert!(output.status.success());

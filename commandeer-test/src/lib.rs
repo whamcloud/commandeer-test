@@ -33,6 +33,7 @@ impl RecordedCommands {
 
     pub fn add_invocation(&mut self, invocation: CommandInvocation) {
         let key = Self::generate_key(&invocation.binary_name, &invocation.args);
+
         self.commands.entry(key).or_default().push(invocation);
     }
 
@@ -42,6 +43,7 @@ impl RecordedCommands {
         args: &[String],
     ) -> Option<&CommandInvocation> {
         let key = Self::generate_key(binary_name, args);
+
         self.commands.get(&key)?.first()
     }
 }
@@ -99,6 +101,7 @@ pub async fn replay_command(
     args: Vec<String>,
 ) -> Result<Option<CommandInvocation>> {
     let recordings = load_recordings(&file_path).await?;
+
     Ok(recordings.find_invocation(&command, &args).cloned())
 }
 
@@ -204,9 +207,8 @@ exec env PATH="{}" {} {} --file {} --command {command_name} "$@"
 #[cfg(test)]
 mod tests {
     use crate::{Commandeer, Mode, commandeer};
-    use sealed_test::prelude::*;
 
-    #[sealed_test]
+    #[serial_test::serial]
     fn test_mock_cmd() {
         let commandeer = Commandeer::new("test_recordings.json", Mode::Replay);
         let mock_path = commandeer.mock_command("echo");
@@ -222,7 +224,7 @@ mod tests {
     }
 
     #[commandeer(Replay, "echo")]
-    #[sealed_test]
+    #[serial_test::serial]
     fn my_test() {
         let output = std::process::Command::new("echo")
             .arg("hello")
@@ -234,8 +236,21 @@ mod tests {
 
     #[commandeer(Replay, "date")]
     #[tokio::test]
+    #[serial_test::serial]
     async fn async_replay() {
         let output = std::process::Command::new("date").output().unwrap();
+
+        assert!(output.status.success());
+    }
+
+    #[commandeer(Record, "git")]
+    #[test]
+    #[serial_test::serial]
+    fn test_flag_args() {
+        let output = std::process::Command::new("git")
+            .arg("--version")
+            .output()
+            .unwrap();
 
         assert!(output.status.success());
     }
