@@ -236,6 +236,14 @@ exec env PATH="{}" {} {} --file {} --command {command_name} "$@"
     }
 }
 
+impl Drop for Commandeer {
+    fn drop(&mut self) {
+        unsafe {
+            std::env::set_var("PATH", &self.original_path);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate as commandeer_test;
