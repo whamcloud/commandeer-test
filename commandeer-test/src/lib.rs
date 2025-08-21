@@ -176,6 +176,10 @@ impl Commandeer {
 
         let fixture = dir.join("testcmds").join(test_name);
 
+        if fixture.exists() && mode == Mode::Record {
+            std::fs::remove_file(&fixture).expect("Failed to remove existing fixture file");
+        }
+
         let mock_runner = CargoBuild::new()
             .manifest_path(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"))
             .package("commandeer-cli")
@@ -205,16 +209,11 @@ impl Commandeer {
 
         let wrapper = format!(
             r#"#!/usr/bin/env bash
-exec env PATH="{}" {} {}{}--file {} --command {command_name} "$@"
+exec env PATH="{}" {} {} --file {} --command {command_name} "$@"
 "#,
             self.original_path,
             self.mock_runner.path().display(),
             self.mode,
-            if self.mode == Mode::Record {
-                " --truncate "
-            } else {
-                " "
-            },
             self.fixture.display(),
         );
 
@@ -274,10 +273,20 @@ mod tests {
     async fn async_replay() {
         let output = std::process::Command::new("date").output().unwrap();
 
-        assert!(output.status.success());
+        insta::assert_debug_snapshot!(output, @r#"
+        Output {
+            status: ExitStatus(
+                unix_wait_status(
+                    0,
+                ),
+            ),
+            stdout: "Wed Aug 20 12:46:19 EDT 2025\n",
+            stderr: "",
+        }
+        "#);
     }
 
-    #[commandeer(Record, "git")]
+    #[commandeer(Replay, "git", "date")]
     #[test]
     #[serial_test::serial]
     fn test_flag_args() {
@@ -286,6 +295,30 @@ mod tests {
             .output()
             .unwrap();
 
-        assert!(output.status.success());
+        insta::assert_debug_snapshot!(output, @r#"
+        Output {
+            status: ExitStatus(
+                unix_wait_status(
+                    0,
+                ),
+            ),
+            stdout: "git version 2.51.0\n",
+            stderr: "",
+        }
+        "#);
+
+        let output = std::process::Command::new("date").output().unwrap();
+
+        insta::assert_debug_snapshot!(output, @r#"
+        Output {
+            status: ExitStatus(
+                unix_wait_status(
+                    0,
+                ),
+            ),
+            stdout: "Thu Aug 21 14:54:45 EDT 2025\n",
+            stderr: "",
+        }
+        "#);
     }
 }

@@ -1,5 +1,14 @@
 {
   "commands": {
+    "date:": [
+      {
+        "binary_name": "date",
+        "args": [],
+        "stdout": "Thu Aug 21 14:54:45 EDT 2025\n",
+        "stderr": "",
+        "exit_code": 0
+      }
+    ],
     "git:--version": [
       {
         "binary_name": "git",
