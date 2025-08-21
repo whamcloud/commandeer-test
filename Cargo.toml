@@ -6,15 +6,7 @@ resolver = "3"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
-keywords = [
-    "capture",
-    "cli",
-    "command-output",
-    "integration-testing",
-    "record",
-    "replay",
-    "testing",
-]
+keywords = ["cli", "command", "testing", "record", "replay"]
 
 [workspace.dependencies]
 anyhow = "1"

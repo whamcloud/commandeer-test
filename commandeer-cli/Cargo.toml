@@ -16,6 +16,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true }
+commandeer-test = { path = "../commandeer-test", version = "0.1.0" }
 tokio = { workspace = true, features = [
     "fs",
     "io-util",
@@ -23,4 +24,3 @@ tokio = { workspace = true, features = [
     "process",
     "rt-multi-thread",
 ] }
-commandeer-test = { path = "../commandeer-test" }
