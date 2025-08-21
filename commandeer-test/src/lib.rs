@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use escargot::CargoBuild;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -51,9 +51,9 @@ impl RecordedCommands {
 pub async fn load_recordings(file_path: &PathBuf) -> Result<RecordedCommands> {
     if !file_path.exists() {
         tokio::fs::create_dir_all(
-            file_path.parent().unwrap_or_else(|| {
-                panic!("Couldn't get parent of recording {}", file_path.display())
-            }),
+            file_path.parent().ok_or_else(|| {
+                anyhow!("Couldn't get parent of recording {}", file_path.display())
+            })?,
         )
         .await?;
 
