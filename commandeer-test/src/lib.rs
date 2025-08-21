@@ -3,8 +3,7 @@ use escargot::CargoBuild;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
-    env, fmt,
-    fs::{self},
+    env, fmt, fs,
     path::{Path, PathBuf},
 };
 use tempfile::TempDir;

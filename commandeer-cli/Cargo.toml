@@ -6,6 +6,9 @@ keywords.workspace = true
 license.workspace = true
 description = "CLI for commandeer-test"
 
+[lints]
+workspace = true
+
 [[bin]]
 name = "commandeer"
 path = "src/main.rs"

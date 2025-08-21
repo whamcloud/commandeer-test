@@ -6,6 +6,9 @@ keywords.workspace = true
 license.workspace = true
 description = "Takes over your commands for testing with record and replay support."
 
+[lints]
+workspace = true
+
 [dependencies]
 tokio = { workspace = true, features = [
     "fs",

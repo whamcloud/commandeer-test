@@ -6,6 +6,9 @@ keywords.workspace = true
 license.workspace = true
 description = "Proc macros for commandeer-test"
 
+[lints]
+workspace = true
+
 [lib]
 proc-macro = true
 
