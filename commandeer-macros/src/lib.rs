@@ -106,5 +106,16 @@ pub fn commandeer(args: TokenStream, input: TokenStream) -> TokenStream {
 
     input_fn.block.stmts = new_stmts;
 
+    let body_str = quote!(#input_fn).to_string();
+
+    if body_str.contains("local_serial_core") {
+        return syn::Error::new_spanned(
+            input_fn.sig.fn_token,
+            "Out of order error. `commandeer` macro must be above the `serial_test` macro.",
+        )
+        .to_compile_error()
+        .into();
+    }
+
     TokenStream::from(quote! { #input_fn })
 }
