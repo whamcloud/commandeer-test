@@ -9,24 +9,6 @@
         "stdout": "git version 2.51.0\n",
         "stderr": "",
         "exit_code": 0
-      },
-      {
-        "binary_name": "git",
-        "args": [
-          "--version"
-        ],
-        "stdout": "git version 2.51.0\n",
-        "stderr": "",
-        "exit_code": 0
-      },
-      {
-        "binary_name": "git",
-        "args": [
-          "--version"
-        ],
-        "stdout": "git version 2.51.0\n",
-        "stderr": "",
-        "exit_code": 0
       }
     ]
   }

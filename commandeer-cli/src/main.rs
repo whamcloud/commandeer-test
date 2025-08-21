@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(name = "commandeer")]
-#[command(about = "A CLI test binary substitute with record and replay modes")]
+/// A CLI test binary substitute with record and replay modes
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -14,14 +14,19 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Record {
+        /// Path to save recordings.
         #[arg(long, default_value = "recordings.json")]
         file: PathBuf,
+        /// Whether to truncate the file before recording.
+        #[arg(long)]
+        truncate: bool,
         #[arg(long)]
         command: String,
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     Replay {
+        /// Path to the recordings.
         #[arg(long, default_value = "recordings.json")]
         file: PathBuf,
         #[arg(long)]
@@ -31,8 +36,13 @@ enum Commands {
     },
 }
 
-async fn record_mode(file_path: PathBuf, command: String, args: Vec<String>) -> Result<()> {
-    let invocation = record_command(file_path, command, args).await?;
+async fn record_mode(
+    truncate: bool,
+    file_path: PathBuf,
+    command: String,
+    args: Vec<String>,
+) -> Result<()> {
+    let invocation = record_command(truncate, file_path, command, args).await?;
 
     output_invocation(&invocation);
 
@@ -66,8 +76,9 @@ async fn main() -> Result<()> {
             file,
             command,
             args,
+            truncate,
         } => {
-            record_mode(file, command, args).await?;
+            record_mode(truncate, file, command, args).await?;
         }
         Commands::Replay {
             file,

@@ -4,11 +4,15 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     env, fmt,
-    fs::{self, DirBuilder},
+    fs::{self},
     path::{Path, PathBuf},
 };
 use tempfile::TempDir;
-use tokio::process::Command;
+use tokio::{
+    fs::{DirBuilder, try_exists},
+    io::AsyncReadExt as _,
+    process::Command,
+};
 
 pub use commandeer_macros::commandeer;
 
@@ -49,18 +53,16 @@ impl RecordedCommands {
 }
 
 pub async fn load_recordings(file_path: &PathBuf) -> Result<RecordedCommands> {
-    if !file_path.exists() {
-        tokio::fs::create_dir_all(
-            file_path.parent().ok_or_else(|| {
-                anyhow!("Couldn't get parent of recording {}", file_path.display())
-            })?,
-        )
+    let mut f = tokio::fs::File::options();
+
+    let mut contents = String::new();
+    f.create(true)
+        .write(true)
+        .read(true)
+        .open(file_path)
+        .await?
+        .read_to_string(&mut contents)
         .await?;
-
-        return Ok(RecordedCommands::default());
-    }
-
-    let contents = tokio::fs::read_to_string(file_path).await?;
 
     if contents.trim().is_empty() {
         return Ok(RecordedCommands::default());
@@ -80,11 +82,29 @@ pub async fn save_recordings(file_path: &PathBuf, recordings: &RecordedCommands)
 }
 
 pub async fn record_command(
+    truncate: bool,
     file_path: PathBuf,
     command: String,
     args: Vec<String>,
 ) -> Result<CommandInvocation> {
-    let mut recordings = load_recordings(&file_path).await?;
+    let recording_dir = file_path
+        .parent()
+        .ok_or_else(|| anyhow!("Couldn't get parent of recording {}", file_path.display()))?;
+
+    DirBuilder::new()
+        .recursive(true)
+        .create(recording_dir)
+        .await?;
+
+    let mut recordings = if truncate {
+        if try_exists(&file_path).await? {
+            tokio::fs::remove_file(&file_path).await?;
+        }
+
+        RecordedCommands::default()
+    } else {
+        load_recordings(&file_path).await?
+    };
 
     let output = Command::new(&command).args(&args).output().await?;
 
@@ -121,7 +141,7 @@ pub fn exit_with_code(code: i32) -> ! {
     std::process::exit(code);
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Mode {
     Record,
     Replay,
@@ -150,7 +170,7 @@ impl Commandeer {
             std::env::var("CARGO_MANIFEST_DIR").expect("Failed to get crate directory."),
         );
 
-        DirBuilder::new()
+        std::fs::DirBuilder::new()
             .recursive(true)
             .create(&dir)
             .expect("Failed to create testcmds dir");
@@ -186,11 +206,16 @@ impl Commandeer {
 
         let wrapper = format!(
             r#"#!/usr/bin/env bash
-exec env PATH="{}" {} {} --file {} --command {command_name} "$@"
+exec env PATH="{}" {} {}{}--file {} --command {command_name} "$@"
 "#,
             self.original_path,
             self.mock_runner.path().display(),
             self.mode,
+            if self.mode == Mode::Record {
+                " --truncate "
+            } else {
+                " "
+            },
             self.fixture.display(),
         );
 
