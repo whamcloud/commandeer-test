@@ -200,10 +200,10 @@ cargo test -p commandeer
 
 ```bash
 # Test record functionality
-cargo run -p commandeer-cli -- record --command echo "Hello, Commandeer!"
+cargo run -p commandeer-cli -- record --command echo "Hello, Commandeer"
 
 # Test replay functionality
-cargo run -p commandeer-cli -- replay --command echo "Hello, Commandeer!"
+cargo run -p commandeer-cli -- replay --command echo "Hello, Commandeer"
 ```
 
 ## Use Cases

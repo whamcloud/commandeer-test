@@ -215,6 +215,7 @@ exec env PATH="{}" {} {} --file {} --command {command_name} "$@"
 
 #[cfg(test)]
 mod tests {
+    use crate as commandeer_test;
     use crate::{Commandeer, Mode, commandeer};
 
     #[serial_test::serial]

@@ -48,7 +48,7 @@ pub fn commandeer(args: TokenStream, input: TokenStream) -> TokenStream {
 
     // Create the setup statements
     let setup_stmts: Vec<syn::Stmt> = vec![parse_quote! {
-        let commandeer = crate::Commandeer::new(#test_file_name, crate::Mode::#mode_ident);
+        let commandeer = commandeer_test::Commandeer::new(#test_file_name, commandeer_test::Mode::#mode_ident);
     }];
 
     let mock_stmts: Vec<syn::Stmt> = mock_commands
