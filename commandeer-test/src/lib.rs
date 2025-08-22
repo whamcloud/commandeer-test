@@ -182,7 +182,7 @@ impl Commandeer {
 
         let mock_runner = CargoBuild::new()
             .manifest_path(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"))
-            .package("commandeer-cli")
+            .package("commandeer-test")
             .bin("commandeer")
             .run()
             .expect("Failed to build mock binary");

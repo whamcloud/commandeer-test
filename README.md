@@ -13,10 +13,9 @@ Commandeer allows you to record command-line invocations and their outputs durin
 
 ## Workspace Structure
 
-This project is organized as a Cargo workspace with three main crates:
+This project is organized as a Cargo workspace with two crates:
 
 - **`commandeer-test`** - Core library providing record/replay functionality
-- **`commandeer-cli`** - Command-line binary for standalone record/replay operations
 - **`commandeer-macros`** - Procedural macros for test setup automation
 
 ## Installation
@@ -31,7 +30,7 @@ cargo add commandeer --dev
 
 ### CLI Binary
 
-The `commandeer-cli` binary provides standalone record and replay functionality:
+The `commandeer` binary provides standalone record and replay functionality:
 
 #### Recording Commands
 
@@ -183,7 +182,7 @@ Recordings are stored in JSON format:
 cargo build --workspace
 
 # Build specific crate
-cargo build -p commandeer-cli
+cargo build -p commandeer-test
 ```
 
 ### Running Tests
@@ -200,10 +199,10 @@ cargo test -p commandeer
 
 ```bash
 # Test record functionality
-cargo run -p commandeer-cli -- record --command echo "Hello, Commandeer"
+cargo run record --command echo "Hello, Commandeer"
 
 # Test replay functionality
-cargo run -p commandeer-cli -- replay --command echo "Hello, Commandeer"
+cargo run replay --command echo "Hello, Commandeer"
 ```
 
 ## Use Cases

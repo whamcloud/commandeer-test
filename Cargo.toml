@@ -1,12 +1,13 @@
 [workspace]
-members = ["commandeer-test", "commandeer-cli", "commandeer-macros"]
+members = ["commandeer-test", "commandeer-macros"]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT"
 keywords = ["cli", "command", "testing", "record", "replay"]
+default-run = "commandeer"
 
 [workspace.dependencies]
 anyhow = "1"
