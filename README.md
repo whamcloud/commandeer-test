@@ -243,6 +243,10 @@ fn test_api_interactions() {
 }
 ```
 
+## Limitations
+
+Due to how commandeer utilizes the $PATH of a process, only relative binary invocations are supported (absolute path binary invocations do not work).
+
 ## License
 
 Licensed under the MIT License. See `LICENSE` file for details.
